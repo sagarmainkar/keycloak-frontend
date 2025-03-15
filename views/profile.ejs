@@ -1,0 +1,167 @@
+<!-- views/profile.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Keycloak Auth Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #4CAF50;
+        }
+        .profile-info {
+            flex-grow: 1;
+        }
+        .fallback-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            margin-right: 20px;
+            border: 3px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <a href="/" class="btn" style="background: #2196F3;">Back to Home</a>
+    <a href="/logout" class="btn" style="background: #f44336;">Logout</a>
+    
+    <div class="container">
+        <div class="profile-header">
+            <% if (user.picture) { %>
+                <img class="profile-picture" src="<%= user.picture %>" alt="Profile picture">
+            <% } else { %>
+                <div class="fallback-avatar">
+                    <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                </div>
+            <% } %>
+            <div class="profile-info">
+                <h2><%= user.name %></h2>
+                <% if (user.email) { %>
+                    <p><strong>Email:</strong> <%= user.email %></p>
+                <% } %>
+                <% if (user.preferred_username) { %>
+                    <p><strong>Username:</strong> <%= user.preferred_username %></p>
+                <% } %>
+            </div>
+        </div>
+        
+        <h2>User Details</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <td><%= user.name %></td>
+            </tr>
+            <% if (user.email) { %>
+            <tr>
+                <th>Email</th>
+                <td><%= user.email %></td>
+            </tr>
+            <% } %>
+            <tr>
+                <th>Subject</th>
+                <td><%= user.sub %></td>
+            </tr>
+            <% if (user.preferred_username) { %>
+            <tr>
+                <th>Username</th>
+                <td><%= user.preferred_username %></td>
+            </tr>
+            <% } %>
+            <% if (user.picture) { %>
+            <tr>
+                <th>Picture URL</th>
+                <td><%= user.picture %></td>
+            </tr>
+            <% } %>
+        </table>
+        
+        <h2>All User Claims</h2>
+        <pre><%= JSON.stringify(user, null, 2) %></pre>
+        
+        <h2>ID Token</h2>
+        <pre><%= idToken %></pre>
+        
+        <% if (accessToken) { %>
+            <h2>Access Token</h2>
+            <pre><%= accessToken.access_token %></pre>
+            
+            <% if (accessToken.claims) { %>
+                <h2>Token Claims</h2>
+                <pre><%= JSON.stringify(accessToken.claims, null, 2) %></pre>
+                
+                <% if (accessToken.claims.exp) { %>
+                    <h2>Token Expiration</h2>
+                    <p>Expires at: <%= new Date(accessToken.claims.exp * 1000).toLocaleString() %></p>
+                <% } %>
+            <% } else { %>
+                <p>No claims data available in the access token.</p>
+            <% } %>
+        <% } else { %>
+            <h2>Access Token</h2>
+            <p>No access token available. This might be due to the Keycloak client configuration or the authentication scope.</p>
+        <% } %>
+    </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keycloak Auth Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #4CAF50;
+        }
+        .profile-info {
+            flex-grow: 1;
+        }
+        .fallback-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-right: 20px;
+            border: 3px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Keycloak Authentication Demo</h1>
+    
+    <% if (!isAuthenticated) { %>
+        <p>You are not logged in.</p>
+        <a href="/login" class="btn">Login with Keycloak</a>
+    <% } else { %>
+        <div class="profile-header">
+            <% if (user.picture) { %>
+                <img class="profile-picture" src="<%= user.picture %>" alt="Profile picture">
+            <% } else { %>
+                <div class="fallback-avatar">
+                    <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                </div>
+            <% } %>
+            <div class="profile-info">
+                <h2>Welcome, <%= user.name %>!</h2>
+                <a href="/profile" class="btn">View Profile Details</a>
+                <a href="/logout" class="btn" style="background: #f44336;">Logout</a>
+            </div>
+        </div>
+        
+        <div class="container">
+            <h2>User Information</h2>
+            <pre><%= JSON.stringify(user, null, 2) %></pre>
+            
+            <h2>ID Token</h2>
+            <pre><%= idToken %></pre>
+            
+            <% if (accessToken) { %>
+                <h2>Access Token</h2>
+                <pre><%= accessToken.token %></pre>
+                
+                <h2>Token Claims</h2>
+                <pre><%= JSON.stringify(accessToken.claims, null, 2) %></pre>
+            <% } %>
+        </div>
+    <% } %>
+</body>
+</html>
+
